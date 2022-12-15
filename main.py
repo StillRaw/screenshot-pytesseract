@@ -9,7 +9,6 @@ from pytesseract import pytesseract
 import pyperclip
 import time
 import os
-import sys
 import threading
 
 
@@ -19,10 +18,10 @@ class App:
         self.hide_window()
         ix = None
         iy = None
-        self.root.protocol("WM_DELETE_WINDOW", self.hide_window)
 
     # Define a function for quit the window
     def quit_window(self, icon, item):
+        self.icon.stop()
         os._exit(1)
 
     # Hide the window and show on the system taskbar
@@ -40,6 +39,7 @@ class App:
             "Ekran görüntüsünü metine çevirme",
             menu,
         )
+        self.icon.notify("Program çalıştırıldı.")
         # Run the icon mainloop in a separate thread
         self.thread = threading.Thread(target=self.icon.run)
         self.thread.start()
@@ -60,6 +60,7 @@ class App:
 
         self.root.geometry(root_geometry)  # Sets the geometry string value
         print(root_geometry)
+
         self.root.wm_attributes("-alpha", 0.2)
 
         self.root.overrideredirect(True)
@@ -68,18 +69,23 @@ class App:
         self.canvas = Canvas(
             self.root, width=screen_width, height=screen_width
         )  # Crate canvas
+
         self.canvas.config(cursor="cross")  # Change mouse pointer to cross
         self.canvas.pack()
 
-        self.canvas.bind("<ButtonPress-1>", self.onmouse)
-        self.canvas.bind("<B1-Motion>", self.paint)  # drawing  line
-
         # Collect events until released
         with Listener(on_move=App.on_move, on_click=App.on_click) as listener:
+            self.canvas.bind("<ButtonPress-1>", self.onmouse)
+            self.canvas.bind("<B1-Motion>", self.paint)  # drawing  line
+
             listener.join()
+            self.canvas.destroy()  # destroy canvas
+
+            self.root.withdraw()
             self.img_to_text_pytesseract()
-            python = sys.executable
-            os.execl(python, python, *sys.argv)
+
+            # python = sys.executable
+            # os.execl(python, python, *sys.argv)
 
     # All functions are defined below
     def onmouse(self, event):
@@ -178,7 +184,7 @@ class CopyPaste:
         time.sleep(0.01)
         all_text = pyperclip.paste()
 
-        for number in all_text[:21:2]:
+        for number in all_text[:11:2]:
             if number.isnumeric():
                 tc = "".join(i for i in all_text if i.isnumeric())
                 pyperclip.copy(tc)
