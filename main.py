@@ -1,7 +1,7 @@
 # Import the required libraries
 from tkinter import *
 from pystray import MenuItem as item
-import pystray
+from pystray import Icon
 from PIL import Image, ImageGrab
 from pynput.mouse import Listener
 from pynput.keyboard import GlobalHotKeys
@@ -30,7 +30,7 @@ class App:
         image = Image.open("favicon.ico")
 
         menu = (item("Çıkış", self.quit_window),)
-        self.icon = pystray.Icon(
+        self.icon = Icon(
             "image2text",
             image,
             "Ekran görüntüsünü metine çevirme",
