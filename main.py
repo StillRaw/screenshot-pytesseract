@@ -29,17 +29,17 @@ class App:
         self.root.withdraw()
         image = Image.open("favicon.ico")
 
-        menu = (
-            item("Çıkış", self.quit_window),
-            #  item("Başlat", self.show_window)
-        )
+        menu = (item("Çıkış", self.quit_window),)
         self.icon = pystray.Icon(
             "image2text",
             image,
             "Ekran görüntüsünü metine çevirme",
             menu,
         )
-        self.icon.notify("Program çalıştırıldı.")
+        self.icon.notify(
+            "CTRL + ALT + Z ile ekran görüntüsünü metine çevirebilirsiniz."
+        )
+
         # Run the icon mainloop in a separate thread
         self.thread = threading.Thread(target=self.icon.run)
         self.thread.start()
@@ -84,10 +84,6 @@ class App:
             self.root.withdraw()
             self.img_to_text_pytesseract()
 
-            # python = sys.executable
-            # os.execl(python, python, *sys.argv)
-
-    # All functions are defined below
     def onmouse(self, event):
         self.old_x = []
         self.old_y = []
@@ -121,7 +117,6 @@ class App:
                 ix = x
                 iy = y
                 print("left button pressed at {0}".format((x, y)))
-                print("if", ix, iy, x, y)
                 print(x, y)
 
             else:
@@ -131,24 +126,18 @@ class App:
                 if ix == x or iy == y:
                     ix, iy, x, y = 1, 2, 3, 4
                     print("Same x or y coordinates can not create an area!")
-                    print("if", ix, iy, x, y)
-
-                    # root.quit()
                 elif ix > x and iy > y:
                     lx, ly = ix, iy
                     ix, iy = x, y
                     x, y = lx, ly
-                    print("if", ix, iy, x, y)
                 elif ix > x:
                     lx = ix
                     ix = x
                     x = lx
-                    print("if", ix, iy, x, y)
                 elif iy > y:
                     ly = iy
                     iy = y
                     y = ly
-                    print("if", ix, iy, x, y)
 
                 bbox = (ix, iy, x, y)
                 img = ImageGrab.grab(bbox)  # Take the screenshot
@@ -201,7 +190,7 @@ if __name__ == "__main__":
 
     global_keys = GlobalHotKeys(
         {
-            "<alt>+z": app.screen_parse,
+            "<ctrl>+<alt>+z": app.screen_parse,
             "<ctrl>+c": CopyPaste.on_activate_copy,
         }
     )
