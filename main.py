@@ -188,6 +188,8 @@ if __name__ == "__main__":
     root = Tk()
     app = App(root)
 
+    """ I add 'self._state.remove(key)' in __init__ file at the line of 180. 
+        Because it is very hard to release 3 pressed button at the same time. """
     global_keys = GlobalHotKeys(
         {
             "<ctrl>+<alt>+z": app.screen_parse,
