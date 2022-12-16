@@ -170,16 +170,19 @@ class CopyPaste:
     def on_activate_copy():
         print("<CTRL> + C pressed!")
 
-        time.sleep(0.01)
+        time.sleep(0.1)
         all_text = pyperclip.paste()
-
+        print(all_text)
+        
         for number in all_text[:11:2]:
+            
             if number.isnumeric():
                 tc = "".join(i for i in all_text if i.isnumeric())
                 pyperclip.copy(tc)
         try:
-            print(all_text)
+            
             print(tc)
+            
         except:
             pass
 
