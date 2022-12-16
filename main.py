@@ -223,7 +223,7 @@ if __name__ == "__main__":
     app = App(root)
 
     """ I replace self._state.remove(key) with 'self._state.clear()' in
-     __init__ file at the line of 190. Because it is very hard to release
+     __init__ file at the line of 190 and 183. Because it is very hard to release
      3 pressed button at the same time. """
     global_keys = GlobalHotKeys(
         {
