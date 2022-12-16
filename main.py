@@ -168,7 +168,7 @@ class App:
 class CopyPaste:
     def on_activate_copy():
         print("<CTRL> + C pressed!")
-
+        all_text=None
         time.sleep(0.1)
         all_text = pyperclip.paste()
         print(all_text)
@@ -177,6 +177,9 @@ class CopyPaste:
         # is_tc=False
 
         def isValidTCID(value):
+            if value == None or value=="" or value==" ":
+                return False
+
             value = str(value)
             
             # 11 hanelidir.
