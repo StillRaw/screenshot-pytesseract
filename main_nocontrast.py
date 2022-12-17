@@ -2,7 +2,7 @@
 from tkinter import *
 from pystray import MenuItem as item
 from pystray import Icon
-from PIL import Image, ImageGrab, ImageEnhance, ImageOps
+from PIL import Image, ImageGrab
 from pynput.mouse import Listener
 from pynput.keyboard import GlobalHotKeys
 from pytesseract import pytesseract
@@ -141,12 +141,7 @@ class App:
 
                 bbox = (ix, iy, x, y)
                 img = ImageGrab.grab(bbox)  # Take the screenshot
-                grayscale = ImageOps.grayscale(img)
-                # inverted = ImageOps.invert(grayscale.convert('RGB'))
-                enhancer = ImageEnhance.Contrast(grayscale)
-                factor = 1.6  # increase contrast
-                grayscale = enhancer.enhance(factor)
-                grayscale.save("screenshot_area.png", "PNG")  # Save the screenshot
+                img.save("screenshot_area.jpg")  # Save the screenshot
 
         if not pressed:
             # Stop listener
@@ -156,7 +151,7 @@ class App:
         # Defining paths to tesseract.exe
         # and the image we would be using
         path_to_tesseract = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-        image_path = r"screenshot_area.png"
+        image_path = r"screenshot_area.jpg"
 
         # Providing the tesseract executable
         # location to pytesseract library
@@ -165,7 +160,7 @@ class App:
         # Passing the image object to image_to_string() function
         # This function will extract the text from the image
         img = Image.open(image_path)
-        text = pytesseract.image_to_string(img, lang="tur", config="--psm 10")
+        text = pytesseract.image_to_string(img, lang="tur")
         pyperclip.copy(text)
         # Displaying the extracted text
         print(text[:])
@@ -180,7 +175,6 @@ class CopyPaste:
         print(all_text)
         all_text = all_text.replace("\r", "")
         all_text = all_text.replace("\n", "")
-        all_text = all_text.replace(" ", "")
         # is_tc=False
 
         def isValidTCID(value):
