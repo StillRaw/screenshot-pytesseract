@@ -1,5 +1,6 @@
 # Import the required libraries
 from tkinter import *
+import pystray
 from pystray import MenuItem as item
 from pystray import Icon
 from PIL import Image, ImageGrab, ImageEnhance, ImageOps
@@ -11,6 +12,8 @@ import time
 import os
 import threading
 
+# from pystray import Icon as icon, Menu as menu, MenuItem as item
+
 
 class App:
     def __init__(self, root):
@@ -18,18 +21,85 @@ class App:
         self.hide_window()
         ix = None
         iy = None
+        # At first start default language is English.
+        self.state_eng = True
+        self.state_tur = False
+
+    def language_clear(self):
+        self.state_eng = False
+        self.state_tur = False
+
+    def activate_eng(self, icon, item):
+        self.language_clear()
+        self.state_eng = not item.checked
+        print(self.state_eng)
+
+    def activate_tur(self, icon, item):
+        self.language_clear()
+        self.state_tur = not item.checked
+        print(self.state_tur)
 
     # Define a function for quit the window
     def quit_window(self, icon, item):
         self.icon.stop()
         os._exit(1)
 
+    # def language_chosen(self ,icon,language, item,menu):
+
     # Hide the window and show on the system taskbar
     def hide_window(self):
         self.root.withdraw()
         image = Image.open("favicon.ico")
 
-        menu = (item("Çıkış", self.quit_window),)
+        menu = pystray.Menu(
+            item(
+                "Languages",
+                pystray.Menu(
+                    item(
+                        "English",
+                        self.activate_eng,
+                        checked=lambda item: self.state_eng,
+                    ),
+                    item(
+                        "Chinese",
+                        self.activate_eng,
+                        checked=lambda item: self.state_eng,
+                    ),
+                    item(
+                        "Hindi",
+                        self.activate_eng,
+                        checked=lambda item: self.state_eng,
+                    ),
+                    item(
+                        "Spanish",
+                        self.activate_eng,
+                        checked=lambda item: self.state_eng,
+                    ),
+                    item(
+                        "French",
+                        self.activate_tur,
+                        checked=lambda item: self.state_tur,
+                    ),
+                    item(
+                        "Arabic",
+                        self.activate_tur,
+                        checked=lambda item: self.state_tur,
+                    ),
+                    item(
+                        "Russian",
+                        self.activate_tur,
+                        checked=lambda item: self.state_tur,
+                    ),
+                    item(
+                        "Turkish",
+                        self.activate_tur,
+                        checked=lambda item: self.state_tur,
+                    ),
+                ),
+            ),
+            item("Çıkış", self.quit_window),
+        )
+
         self.icon = Icon(
             "image2text",
             image,
@@ -146,7 +216,9 @@ class App:
                 enhancer = ImageEnhance.Contrast(grayscale)
                 factor = 1.6  # increase contrast
                 grayscale = enhancer.enhance(factor)
-                grayscale.save("screenshot_area.png", "PNG")  # Save the screenshot
+                grayscale.save(
+                    "screenshot_area.png", "PNG", dpi=(400.0, 400.0)
+                )  # Save the screenshot
 
         if not pressed:
             # Stop listener
@@ -165,7 +237,10 @@ class App:
         # Passing the image object to image_to_string() function
         # This function will extract the text from the image
         img = Image.open(image_path)
-        text = pytesseract.image_to_string(img, lang="tur", config="--psm 10")
+        if self.state_eng == True:
+            text = pytesseract.image_to_string(img, lang="eng", config="--psm 10")
+        elif self.state_tur == True:
+            text = pytesseract.image_to_string(img, lang="tur", config="--psm 10")
         pyperclip.copy(text)
         # Displaying the extracted text
         print(text[:])
