@@ -11,28 +11,62 @@ import pyperclip
 import time
 import os
 import threading
-
-# from pystray import Icon as icon, Menu as menu, MenuItem as item
+import plyer
 
 
 class App:
     def __init__(self, root):
         self.root = root
         self.hide_window()
-        ix = None
-        iy = None
-        # At first start default language is English.
+
+        # At first default language is English.
         self.state_eng = True
+        self.state_chi_sim = False
+        self.state_hin = False
+        self.state_spa = False
+        self.state_fra = False
+        self.state_ara = False
+        self.state_rus = False
         self.state_tur = False
 
     def language_clear(self):
         self.state_eng = False
+        self.state_chi_sim = False
+        self.state_hin = False
+        self.state_spa = False
+        self.state_fra = False
+        self.state_ara = False
+        self.state_rus = False
         self.state_tur = False
 
     def activate_eng(self, icon, item):
         self.language_clear()
         self.state_eng = not item.checked
         print(self.state_eng)
+
+    def activate_chi_sim(self, icon, item):
+        self.language_clear()
+        self.state_chi_sim = not item.checked
+
+    def activate_hin(self, icon, item):
+        self.language_clear()
+        self.state_hin = not item.checked
+
+    def activate_spa(self, icon, item):
+        self.language_clear()
+        self.state_spa = not item.checked
+
+    def activate_fra(self, icon, item):
+        self.language_clear()
+        self.state_fra = not item.checked
+
+    def activate_ara(self, icon, item):
+        self.language_clear()
+        self.state_ara = not item.checked
+
+    def activate_rus(self, icon, item):
+        self.language_clear()
+        self.state_rus = not item.checked
 
     def activate_tur(self, icon, item):
         self.language_clear()
@@ -43,8 +77,6 @@ class App:
     def quit_window(self, icon, item):
         self.icon.stop()
         os._exit(1)
-
-    # def language_chosen(self ,icon,language, item,menu):
 
     # Hide the window and show on the system taskbar
     def hide_window(self):
@@ -62,33 +94,33 @@ class App:
                     ),
                     item(
                         "Chinese",
-                        self.activate_eng,
-                        checked=lambda item: self.state_eng,
+                        self.activate_chi_sim,
+                        checked=lambda item: self.state_chi_sim,
                     ),
                     item(
                         "Hindi",
-                        self.activate_eng,
-                        checked=lambda item: self.state_eng,
+                        self.activate_hin,
+                        checked=lambda item: self.state_hin,
                     ),
                     item(
                         "Spanish",
-                        self.activate_eng,
-                        checked=lambda item: self.state_eng,
+                        self.activate_spa,
+                        checked=lambda item: self.state_spa,
                     ),
                     item(
                         "French",
-                        self.activate_tur,
-                        checked=lambda item: self.state_tur,
+                        self.activate_fra,
+                        checked=lambda item: self.state_fra,
                     ),
                     item(
                         "Arabic",
-                        self.activate_tur,
-                        checked=lambda item: self.state_tur,
+                        self.activate_ara,
+                        checked=lambda item: self.state_ara,
                     ),
                     item(
                         "Russian",
-                        self.activate_tur,
-                        checked=lambda item: self.state_tur,
+                        self.activate_rus,
+                        checked=lambda item: self.state_rus,
                     ),
                     item(
                         "Turkish",
@@ -97,22 +129,27 @@ class App:
                     ),
                 ),
             ),
-            item("Çıkış", self.quit_window),
+            item("Quit", self.quit_window),
         )
 
         self.icon = Icon(
             "image2text",
             image,
-            "Ekran görüntüsünü metine çevirme",
+            "Easy Capture Image to Text",
             menu,
-        )
-        self.icon.notify(
-            "CTRL + ALT + Z ile ekran görüntüsünü metine çevirebilirsiniz."
         )
 
         # Run the icon mainloop in a separate thread
         self.thread = threading.Thread(target=self.icon.run)
         self.thread.start()
+
+        plyer.notification.notify(
+            app_name="Easy Capture Image to Text",
+            title="Easy Capture Image to Text",
+            message="Press CTRL + ALT + Z togather, select area and It is already copied. Now you can Paste the text.",
+            app_icon="favicon.ico",
+            timeout=10,
+        )
 
     def screen_parse(self):
 
@@ -239,64 +276,24 @@ class App:
         img = Image.open(image_path)
         if self.state_eng == True:
             text = pytesseract.image_to_string(img, lang="eng", config="--psm 10")
+        elif self.state_chi_sim == True:
+            text = pytesseract.image_to_string(img, lang="chi_sim", config="--psm 10")
+        elif self.state_hin == True:
+            text = pytesseract.image_to_string(img, lang="hin", config="--psm 10")
+        elif self.state_spa == True:
+            text = pytesseract.image_to_string(img, lang="spa", config="--psm 10")
+        elif self.state_fra == True:
+            text = pytesseract.image_to_string(img, lang="fra", config="--psm 10")
+        elif self.state_ara == True:
+            text = pytesseract.image_to_string(img, lang="ara", config="--psm 10")
+        elif self.state_rus == True:
+            text = pytesseract.image_to_string(img, lang="rus", config="--psm 10")
         elif self.state_tur == True:
             text = pytesseract.image_to_string(img, lang="tur", config="--psm 10")
+
         pyperclip.copy(text)
         # Displaying the extracted text
         print(text[:])
-
-
-class CopyPaste:
-    def on_activate_copy():
-        print("<CTRL> + C pressed!")
-        all_text = None
-        time.sleep(0.1)
-        all_text = pyperclip.paste()
-        print(all_text)
-        all_text = all_text.replace("\r", "")
-        all_text = all_text.replace("\n", "")
-        all_text = all_text.replace(" ", "")
-        # is_tc=False
-
-        def isValidTCID(value):
-            if value == None or value == "" or value == " ":
-                return False
-
-            value = str(value)
-
-            # 11 hanelidir.
-            if not len(value) == 11:
-                return False
-
-            # Sadece rakamlardan olusur.
-            if not value.isdigit():
-                return False
-
-            # Ilk hanesi 0 olamaz.
-            if int(value[0]) == 0:
-                return False
-
-            digits = [int(d) for d in str(value)]
-
-            # 1. 2. 3. 4. 5. 6. 7. 8. 9. ve 10. hanelerin toplamından elde edilen sonucun
-            # 10'a bölümünden kalan, yani Mod10'u bize 11. haneyi verir.
-            if not sum(digits[:10]) % 10 == digits[10]:
-                return False
-
-            # 1. 3. 5. 7. ve 9. hanelerin toplamının 7 katından, 2. 4. 6. ve 8. hanelerin toplamı çıkartıldığında,
-            # elde edilen sonucun 10'a bölümünden kalan, yani Mod10'u bize 10. haneyi verir.
-            if (
-                not (((7 * sum(digits[:9][-1::-2])) - sum(digits[:9][-2::-2])) % 10)
-                == digits[9]
-            ):
-                return False
-
-            # Butun kontrollerden gecti.
-            return True
-
-        if isValidTCID(all_text):
-            pyperclip.copy(all_text)
-            print(all_text)
 
 
 if __name__ == "__main__":
@@ -306,12 +303,7 @@ if __name__ == "__main__":
     """ I replace self._state.remove(key) with 'self._state.clear()' in
      __init__ file at the line of 190 and 183. Because it is very hard to release
      3 pressed button at the same time. """
-    global_keys = GlobalHotKeys(
-        {
-            "<ctrl>+<alt>+z": app.screen_parse,
-            "<ctrl>+c": CopyPaste.on_activate_copy,
-        }
-    )
+    global_keys = GlobalHotKeys({"<ctrl>+<alt>+z": app.screen_parse})
 
     global_keys.start()
     root.mainloop()
